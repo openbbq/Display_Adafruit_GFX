@@ -1,19 +1,18 @@
 
 #include <Arduino.h>
 #include <Adafruit_ILI9341.h>
+
+#include <Fonts/FreeSans18pt7b.h>
+#include <Fonts/FreeSans12pt7b.h>
+
 #include <Display_Adafruit_GFX.h>
 #include <Display_XPT2046_Touchscreen.h>
 
-#include <Fonts/FreeSans12pt7b.h>
-#include <Fonts/FreeSansBoldOblique24pt7b.h>
-
-#include <Display.h>
 #include <display/ui/Screen.h>
-#include <display/ui/Solid.h>
+#include <display/ui/CheckBox.h>
 
 using namespace display;
 using namespace display::ui;
-#include "Painting.h"
 
 #define DISPLAY_CS 33
 #define DISPLAY_RST 27
@@ -28,7 +27,7 @@ Interface_Adafruit_GFX interface(tft);
 void setup()
 {
     Serial.begin(115200);
-    tft.begin(40000000);
+    tft.begin();
     ts.begin();
 
     auto touch = interface.device<Display_XPT2046_Touchscreen>(ts);
@@ -38,16 +37,14 @@ void setup()
         TS_Point(4050, 3900, 0), // (240,0)
         TS_Point(580, 200, 0));  // (0,320)
 
-    StylePtr cyan = Style::create(ILI9341_CYAN);
-    StylePtr blackGreen = Style::create(ILI9341_BLACK, ILI9341_GREEN);
-    StylePtr blackRed = Style::create(ILI9341_BLACK, ILI9341_RED);
+    StylePtr normal = Style::create(ILI9341_WHITE, ILI9341_BLACK, Font::create(&FreeSans18pt7b));
+    StylePtr toggled = Style::create(ILI9341_WHITE, ILI9341_BLUE);
+    StylePtr pressed = Style::create(ILI9341_LIGHTGREY, ILI9341_BLACK);
 
-    auto screen = interface.begin<Screen>(cyan);
+    auto screen = interface.begin<Screen>(normal);
 
-    Rect rc = screen->content();
-    int16_t half = rc.height() / 2;
-    screen->add<Painting>(blackGreen)->position(rc.indent(4, 4, 4, 2 + half));
-    screen->add<Painting>(blackRed)->position(rc.indent(4, 2 + half, 4, 4));
+    auto chkSample = screen->add<CheckBox>(normal, pressed, toggled);
+    chkSample->position(Rect(Point(40, 40), Size(48, 48)));
 }
 
 void loop()

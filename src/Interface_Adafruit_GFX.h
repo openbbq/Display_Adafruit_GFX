@@ -2,7 +2,7 @@
 
 #include <Display.h>
 #include <Adafruit_GFX.h>
-#include "Clipped.h"
+#include "Clipped_GFX.h"
 
 namespace display
 {

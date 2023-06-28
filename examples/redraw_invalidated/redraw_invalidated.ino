@@ -40,7 +40,7 @@ WindowPtr addBox(WindowPtr w, StylePtr b, StylePtr s)
 void setup()
 {
     Serial.begin(115200);
-    tft.begin(40000000);
+    tft.begin();
 
     StylePtr cyan = Style::create(ILI9341_CYAN);
     StylePtr red = Style::create(ILI9341_RED);

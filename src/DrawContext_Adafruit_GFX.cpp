@@ -10,7 +10,7 @@ namespace display
 
     void DrawContext_Adafruit_GFX::draw(const Rect &rc, Color color)
     {
-        // Serial.printf("draw(%s,%d)\n", rc.toString().c_str(), color);
+        log_v("rc:%s color:%d", rc.toString().c_str(), color);
 
         Rect shown = rc.offset(origin()).intersection(extent());
         // Serial.printf("shown %s\n", shown.toString().c_str());
@@ -27,8 +27,36 @@ namespace display
                 continue;
             }
 
+            log_v("clip:%s %d", clip.toString().c_str());
             _graphics->fillRect(clip.x(), clip.y(), clip.width(), clip.height(), color);
         }
+    }
+
+    void DrawContext_Adafruit_GFX::draw(const RoundRect &rc, Color color)
+    {
+        log_v("rc:%s radius:%d, color:%d", rc.toString().c_str(), rc.radius(), color);
+
+        Point o = origin();
+        Rect shown = rc.offset(o).intersection(extent());
+        // Serial.printf("shown %s\n", shown.toString().c_str());
+        if (shown.empty())
+        {
+            return;
+        }
+
+        Rect prior = extent();
+        for (const Rect &included : _region)
+        {
+            Rect clip = included.intersection(shown);
+            if (clip.empty())
+            {
+                continue;
+            }
+
+            extent(clip);
+            _graphics->fillRoundRect(rc.x() + o.x(), rc.y() + o.y(), rc.width(), rc.height(), rc.radius(), color);
+        }
+        extent(prior);
     }
 
     void DrawContext_Adafruit_GFX::draw(Point pt0, Point pt1, Color color)
