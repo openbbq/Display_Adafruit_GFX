@@ -23,7 +23,7 @@ namespace display
 
         void draw(const Rect &rc, Color color) override;
         void draw(Point pt0, Point pt1, Color color) override;
-         void draw(const RoundRect &rr, Color color) override;
+        void draw(const RoundRect &rr, Color color) override;
         void draw(const Rect &rc, Color background, Color foreground, const FontPtr &font, const String &text, int alignment) override;
 
     private:
