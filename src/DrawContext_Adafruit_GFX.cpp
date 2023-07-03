@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "DrawContext_Adafruit_GFX.h"
+#include "Font_GFX.h"
 
 namespace display
 {
@@ -144,21 +145,6 @@ namespace display
             return;
         }
 
-        if (font)
-        {
-            _graphics->setFont(font->glyphs());
-            _graphics->setTextSize(font->size());
-        }
-        else
-        {
-            _graphics->setFont(nullptr);
-            _graphics->setTextSize(1);
-        }
-
-        // int16_t x, y;
-        // uint16_t w, h;
-        // _graphics->getTextBounds(text.c_str(), 0, 0, &x, &y, &w, &h);
-
         Rect rcText = font->measure(text);
 
         int16_t ox = frame.left() - rcText.left();
@@ -192,9 +178,24 @@ namespace display
 
             extent(clip);
             _graphics->fillRect(clip.x(), clip.y(), clip.width(), clip.height(), background);
-            _graphics->setTextColor(foreground, background);
-            _graphics->setCursor(ox, oy);
-            _graphics->print(text);
+
+            if (font->kind() == Kind::ID<Font_GFX>())
+            {
+                const Font_GFX *f = (const Font_GFX *)font.get();
+                _graphics->setFont(f->glyphs());
+                _graphics->setTextSize(f->size());
+                _graphics->setTextColor(foreground, background);
+                _graphics->setCursor(ox, oy);
+                _graphics->print(text);
+            }
+            else
+            {
+                // return coordinates to zero temporarily, for font's frame of reference
+                auto o = origin();
+                origin(Point(0,0));
+                font->draw(this, clip, background, foreground, ox, oy, text);
+                origin(o);
+            }
         }
         extent(prior);
     }
