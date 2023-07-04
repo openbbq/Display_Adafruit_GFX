@@ -11,10 +11,9 @@ namespace display
 
     void DrawContext_Adafruit_GFX::draw(const Rect &rc, Color color)
     {
-        log_v("rc:%s color:%d", rc.toString().c_str(), color);
+        // log_v("rc:%s color:%d", rc.toString().c_str(), color);
 
         Rect shown = rc.offset(origin()).intersection(extent());
-        // Serial.printf("shown %s\n", shown.toString().c_str());
         if (shown.empty())
         {
             return;
@@ -109,31 +108,8 @@ namespace display
 
     Rect DrawContext_Adafruit_GFX::measure(const FontPtr &font, const String &text) const
     {
-        if (font)
-        {
-            return font->measure(text);
-        }
-        // if (font)
-        // {
-        //     _graphics->setFont(font->glyphs());
-        //     _graphics->setTextSize(font->size());
-        // }
-        // else
-        // {
-        //     _graphics->setFont(nullptr);
-        //     _graphics->setTextSize(1);
-        // }
-
-        // int16_t x, y;
-        // uint16_t w, h;
-        // _graphics->getTextBounds(text.c_str(), 0, 0, &x, &y, &w, &h);
-        // if (font)
-        // {
-        //     Rect cell = font->cell();
-        //     y = cell.top();
-        //     h = cell.height();
-        // }
-        // return Rect(Point(x, y), Size(w, h));
+        // need more than smallest bounding box
+        return font->measure(text);
     }
 
     void DrawContext_Adafruit_GFX::draw(const Rect &rc, Color background, Color foreground, const FontPtr &font, const String &text, int alignment)
@@ -192,7 +168,7 @@ namespace display
             {
                 // return coordinates to zero temporarily, for font's frame of reference
                 auto o = origin();
-                origin(Point(0,0));
+                origin(Point(0, 0));
                 font->draw(this, clip, background, foreground, ox, oy, text);
                 origin(o);
             }
